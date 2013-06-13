@@ -6,7 +6,7 @@
 	<artifactId>jaxrs-oauth2</artifactId>
 	<packaging>jar</packaging>
 	<name>Jaxrs oauth2</name>
-	<description>full jax-rs security using oauth2</description>
+	<description>Full jax-rs security using oauth2</description>
     <version>0.5-SNAPSHOT</version>
 
     <parent>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
+			<version>1.7.2</version>
 		</dependency>
 
 	</dependencies>

@@ -1,4 +1,4 @@
-package net.awired.ajsl.security;
+package net.awired.jaxrs.oauth2;
 
 
 //public class SecurityFilter extends OAuthRequestFilter {
