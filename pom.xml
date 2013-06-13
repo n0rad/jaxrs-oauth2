@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.awired.jaxrs.oauth2</groupId>
+	<artifactId>jaxrs-oauth2</artifactId>
+	<packaging>jar</packaging>
+	<name>Jaxrs oauth2</name>
+	<description>full jax-rs security using oauth2</description>
+    <version>0.5-SNAPSHOT</version>
+
+    <parent>
+        <groupId>net.awired.parent</groupId>
+        <artifactId>parent-java</artifactId>
+        <version>1.16</version>
+    </parent>
+
+    <scm>
+        <connection>scm:git:git://github.com/awired/jaxrs-oauth2.git</connection>
+        <developerConnection>scm:git:git@github.com:awired/jaxrs-oauth2.git</developerConnection>
+        <url>https://github.com/awired/jaxrs-oauth2</url>
+        <tag>HEAD</tag>
+    </scm>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>3.2.1.RELEASE</version>
+		</dependency>
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.security</groupId> -->
+		<!-- <artifactId>spring-security-web</artifactId> -->
+		<!-- <version>3.1.3.RELEASE</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>javax.servlet</groupId> -->
+		<!-- <artifactId>javax.servlet-api</artifactId> -->
+		<!-- <version>3.0.1</version> -->
+		<!-- </dependency> -->
+
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+			<version>2.7.5</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+	</dependencies>
+</project> 
