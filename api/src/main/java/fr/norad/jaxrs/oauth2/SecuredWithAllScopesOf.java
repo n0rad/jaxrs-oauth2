@@ -27,7 +27,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface Secured {
-
-    public Class<? extends Scope>[] value();
+public @interface SecuredWithAllScopesOf {
+    String[] value();
 }

@@ -22,7 +22,7 @@ package fr.norad.jaxrs.oauth2;
 //    @Override
 //    public Response handleRequest(Message message, ClassResourceInfo resourceClass) {
 //        Method method = (Method) message.get("org.apache.cxf.resource.method");
-//        Secured secured = AnnotationUtils.findAnnotation(method, Secured.class);
+//        SecuredWithScope secured = AnnotationUtils.findAnnotation(method, SecuredWithScope.class);
 //        if (secured != null) {
 //            return super.handleRequest(message, resourceClass);
 //        }
