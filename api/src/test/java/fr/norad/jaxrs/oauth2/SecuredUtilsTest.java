@@ -16,6 +16,7 @@
  */
 package fr.norad.jaxrs.oauth2;
 
+import static fr.norad.jaxrs.oauth2.SecuredUtils.findSecured;
 import static fr.norad.jaxrs.oauth2.SecuredUtils.isAuthorized;
 import static org.fest.assertions.api.Assertions.assertThat;
 import java.lang.reflect.Method;
@@ -27,6 +28,17 @@ import org.junit.Test;
 public class SecuredUtilsTest {
     public static Set<String> set(String... scopes) {
         return new HashSet<>(Arrays.asList(scopes));
+    }
+
+    @Test
+    public void should_find_secured_return_null_on_non_annotated() throws Exception {
+        class Test {
+            public void genre() {
+            }
+        }
+        Method method = Test.class.getMethod("genre");
+
+        assertThat(findSecured(method)).isNull();
     }
 
     @Test
