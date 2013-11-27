@@ -5,7 +5,6 @@
 	<groupId>fr.norad.jaxrs.oauth2</groupId>
 	<artifactId>jaxrs-oauth2</artifactId>
 	<packaging>pom</packaging>
-	<name>Jaxrs oauth2</name>
 	<description>Full jax-rs security using oauth2</description>
     <version>0.5-SNAPSHOT</version>
 

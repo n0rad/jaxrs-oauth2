@@ -16,7 +16,7 @@
  */
 package fr.norad.jaxrs.oauth2;
 
-import static fr.norad.jaxrs.oauth2.SecuredUtils.findSecured;
+import static fr.norad.jaxrs.oauth2.SecuredUtils.findSecuredInfo;
 import static fr.norad.jaxrs.oauth2.SecuredUtils.isAuthorized;
 import static org.fest.assertions.api.Assertions.assertThat;
 import java.lang.reflect.Method;
@@ -38,7 +38,7 @@ public class SecuredUtilsTest {
         }
         Method method = Test.class.getMethod("genre");
 
-        assertThat(findSecured(method)).isNull();
+        assertThat(findSecuredInfo(method)).isNull();
     }
 
     @Test

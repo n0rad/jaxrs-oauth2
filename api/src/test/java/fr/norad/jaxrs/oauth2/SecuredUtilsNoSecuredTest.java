@@ -17,12 +17,37 @@
 package fr.norad.jaxrs.oauth2;
 
 import static fr.norad.jaxrs.oauth2.SecuredUtils.isAuthorized;
+import static fr.norad.jaxrs.oauth2.SecuredUtils.isNotSecured;
 import static fr.norad.jaxrs.oauth2.SecuredUtilsTest.set;
 import static org.fest.assertions.api.Assertions.assertThat;
 import java.lang.reflect.Method;
 import org.junit.Test;
 
-public class SecuredUtilsNoScopeTest {
+public class SecuredUtilsNoSecuredTest {
+
+    @Test
+    public void should_find_if_not_secured() throws Exception {
+        class Test {
+            @NotSecured
+            public void genre() {
+            }
+        }
+        Method method = Test.class.getMethod("genre");
+
+        assertThat(isNotSecured(method)).isTrue();
+    }
+
+    @Test
+    public void should_not_find_if_not_secured() throws Exception {
+        class Test {
+            public void genre() {
+            }
+        }
+        Method method = Test.class.getMethod("genre");
+
+        assertThat(isNotSecured(method)).isFalse();
+    }
+
     @Test
     public void should_authorize_not_authenticated_for_authenticated() throws Exception {
         class Test {

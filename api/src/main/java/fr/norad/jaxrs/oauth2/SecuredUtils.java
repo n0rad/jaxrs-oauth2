@@ -18,6 +18,9 @@ package fr.norad.jaxrs.oauth2;
 
 import static fr.norad.core.lang.reflect.AnnotationUtils.findAnnotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public class SecuredUtils {
@@ -27,17 +30,32 @@ public class SecuredUtils {
      * @return
      */
     public static boolean isAuthorized(Method method, Set<String> scopes) {
-        Secured scoped = findSecured(method);
-        if (scoped != null && scoped.isNotSecured()) {
+        SecuredInfo SecuredInfo = findSecuredInfo(method);
+        if (SecuredInfo != null && SecuredInfo.isNotSecured()) {
             return true;
         } else {
-            return checkSecured(method, scopes, scoped);
+            return checkSecured(method, scopes, SecuredInfo);
         }
     }
 
-    public static Secured findSecured(Method method) {
+    public static boolean isNotSecured(Method method) {
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        if (securedInfo != null && securedInfo.isNotSecured()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static Set<String> fromSpaceDelimitedString(String scopes) {
+        if (scopes == null || scopes.trim().isEmpty()) {
+            return Collections.unmodifiableSet(Collections.EMPTY_SET);
+        }
+        return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(scopes.split(" "))));
+    }
+
+    public static SecuredInfo findSecuredInfo(Method method) {
         try {
-            Secured security = new Secured();
+            SecuredInfo security = new SecuredInfo();
             security.read(findAnnotation(method, NotSecured.class));
             security.read(findAnnotation(method, SecuredWithScope.class));
             security.read(findAnnotation(method, SecuredWithAnyScopesOf.class));
@@ -60,7 +78,7 @@ public class SecuredUtils {
         }
     }
 
-    private static boolean checkSecured(Method method, Set<String> scopes, Secured secured) {
+    private static boolean checkSecured(Method method, Set<String> scopes, SecuredInfo secured) {
         if (scopes == null) {
             return false;
         }
