@@ -220,6 +220,18 @@ public class SecuredUtilsTest {
         assertThat(isAuthorized(method, set("scope2"))).isTrue();
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void should_fail_when_scope_string_is_empty() throws Exception {
+        class Test {
+            @SecuredWithAnyScopesOf({"non-empty", ""})
+            public void genre() {
+            }
+        }
+        Method method = Test.class.getMethod("genre");
+
+        isAuthorized(method, set("scope2"));
+    }
+
     @Test
     public void should_find_secured_on_class() throws Exception {
         @SecuredWithAnyScopesOf({"scope1", "scope2"})

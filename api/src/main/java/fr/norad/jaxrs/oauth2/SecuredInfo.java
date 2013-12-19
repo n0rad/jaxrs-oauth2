@@ -17,6 +17,7 @@
 package fr.norad.jaxrs.oauth2;
 
 import java.lang.annotation.Annotation;
+import java.util.Set;
 import lombok.Getter;
 
 public class SecuredInfo {
@@ -66,5 +67,30 @@ public class SecuredInfo {
                                                     + processed);
         }
         processed = a;
+    }
+
+    public boolean isAuthorizingScopes(Set<String> scopesToAuthorize) {
+        if (scopesToAuthorize == null) {
+            return false;
+        }
+        if (scopes == null || scopes.length == 0) {
+            return false;
+        }
+
+        if (isAndAssociation()) {
+            for (String expectedScope : scopes) {
+                if (!scopesToAuthorize.contains(expectedScope)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            for (String expectedScope : scopes) {
+                if (scopesToAuthorize.contains(expectedScope)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

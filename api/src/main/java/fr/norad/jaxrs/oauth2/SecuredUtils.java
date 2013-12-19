@@ -16,7 +16,10 @@
  */
 package fr.norad.jaxrs.oauth2;
 
-import static fr.norad.core.lang.reflect.AnnotationUtils.findAnnotation;
+import static fr.norad.jaxrs.oauth2.SecuredAnnotationReader.notSecuredReader;
+import static fr.norad.jaxrs.oauth2.SecuredAnnotationReader.securedWithAllScopeReader;
+import static fr.norad.jaxrs.oauth2.SecuredAnnotationReader.securedWithAnyScopeReader;
+import static fr.norad.jaxrs.oauth2.SecuredAnnotationReader.securedWithScopeReader;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,25 +28,28 @@ import java.util.Set;
 
 public class SecuredUtils {
     /**
-     * @param method
+     * @param method method
      * @param scopes null if not authenticated
-     * @return
+     * @return true if scopes match the secured info on the method, false otherwise
      */
     public static boolean isAuthorized(Method method, Set<String> scopes) {
-        SecuredInfo SecuredInfo = findSecuredInfo(method);
-        if (SecuredInfo != null && SecuredInfo.isNotSecured()) {
-            return true;
-        } else {
-            return checkSecured(method, scopes, SecuredInfo);
-        }
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        return isAuthorized(securedInfo, scopes);
+    }
+
+    /**
+     * @param securedInfo Secured info
+     * @param scopes null if not authenticated
+     * @return true if scopes match the passed secured info
+     */
+    public static boolean isAuthorized(SecuredInfo securedInfo, Set<String> scopes) {
+        return securedInfo != null
+                && (securedInfo.isNotSecured() || securedInfo.isAuthorizingScopes(scopes));
     }
 
     public static boolean isNotSecured(Method method) {
         SecuredInfo securedInfo = findSecuredInfo(method);
-        if (securedInfo != null && securedInfo.isNotSecured()) {
-            return true;
-        }
-        return false;
+        return securedInfo != null && securedInfo.isNotSecured();
     }
 
     public static Set<String> fromSpaceDelimitedString(String scopes) {
@@ -56,16 +62,16 @@ public class SecuredUtils {
     public static SecuredInfo findSecuredInfo(Method method) {
         try {
             SecuredInfo security = new SecuredInfo();
-            security.read(findAnnotation(method, NotSecured.class));
-            security.read(findAnnotation(method, SecuredWithScope.class));
-            security.read(findAnnotation(method, SecuredWithAnyScopesOf.class));
-            security.read(findAnnotation(method, SecuredWithAllScopesOf.class));
+            security.read(notSecuredReader().scopes(method));
+            security.read(securedWithScopeReader().scopes(method));
+            security.read(securedWithAnyScopeReader().scopes(method));
+            security.read(securedWithAllScopeReader().scopes(method));
 
             if (security.processed == null) {
-                security.read(findAnnotation(method.getDeclaringClass(), NotSecured.class));
-                security.read(findAnnotation(method.getDeclaringClass(), SecuredWithScope.class));
-                security.read(findAnnotation(method.getDeclaringClass(), SecuredWithAnyScopesOf.class));
-                security.read(findAnnotation(method.getDeclaringClass(), SecuredWithAllScopesOf.class));
+                security.read(notSecuredReader().scopes(method.getDeclaringClass()));
+                security.read(securedWithScopeReader().scopes(method.getDeclaringClass()));
+                security.read(securedWithAnyScopeReader().scopes(method.getDeclaringClass()));
+                security.read(securedWithAllScopeReader().scopes(method.getDeclaringClass()));
             }
 
             if (security.processed == null) {
@@ -75,37 +81,6 @@ public class SecuredUtils {
             return security;
         } catch (Exception e) {
             throw new IllegalStateException("Invalid security annotation declaration on method " + method, e);
-        }
-    }
-
-    private static boolean checkSecured(Method method, Set<String> scopes, SecuredInfo secured) {
-        if (scopes == null) {
-            return false;
-        }
-        if (secured == null || secured.getScopes() == null || secured.getScopes().length == 0) {
-            return false;
-        }
-
-        if (secured.isAndAssociation()) {
-            for (String expectedScope : secured.getScopes()) {
-                if (expectedScope.isEmpty()) {
-                    throw new IllegalStateException("Empty scope not allowed on method :" + method);
-                }
-                if (!scopes.contains(expectedScope)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            for (String expectedScope : secured.getScopes()) {
-                if (expectedScope.isEmpty()) {
-                    throw new IllegalStateException("Empty scope not allowed on method :" + method);
-                }
-                if (scopes.contains(expectedScope)) {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 
