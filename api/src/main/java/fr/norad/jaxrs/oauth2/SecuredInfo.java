@@ -16,81 +16,31 @@
  */
 package fr.norad.jaxrs.oauth2;
 
-import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 
+@Getter
 public class SecuredInfo {
-    Annotation processed;
-    @Getter
-    private String[] scopes;
-    @Getter
-    private boolean andAssociation;
-    @Getter
-    private boolean notSecured;
+    private final ScopeStrategy strategy;
 
-    void read(NotSecured notSecured) {
-        checkNotFilled(notSecured);
-        this.notSecured = notSecured != null;
+    private final Set<Scope> scopes;
+
+    public SecuredInfo(Scope[] scopes, ScopeStrategy strategy) {
+        this.scopes = new HashSet<>(Arrays.asList(scopes));
+        this.strategy = strategy;
     }
 
-    void read(SecuredWithScope scope) {
-        checkNotFilled(scope);
-        if (scope != null) {
-            scopes = new String[]{scope.value()};
-        }
-    }
-
-    void read(SecuredWithAllScopesOf scope) {
-        checkNotFilled(scope);
-        if (scope != null) {
-            scopes = scope.value();
-            andAssociation = true;
+    public boolean isAuthorizingScopes(Set<Scope> scopesToAuthorize) {
+        if (scopes.isEmpty()) {
+            return true;
         }
 
-    }
-
-    void read(SecuredWithAnyScopesOf scope) {
-        checkNotFilled(scope);
-        if (scope != null) {
-            scopes = scope.value();
-            andAssociation = false;
-        }
-    }
-
-    private void checkNotFilled(Annotation a) {
-        if (a == null) {
-            return;
-        }
-        if (processed != null) {
-            throw new IllegalStateException("only one accept annotation is allowed. found " + a + " and "
-                                                    + processed);
-        }
-        processed = a;
-    }
-
-    public boolean isAuthorizingScopes(Set<String> scopesToAuthorize) {
         if (scopesToAuthorize == null) {
             return false;
         }
-        if (scopes == null || scopes.length == 0) {
-            return false;
-        }
 
-        if (isAndAssociation()) {
-            for (String expectedScope : scopes) {
-                if (!scopesToAuthorize.contains(expectedScope)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            for (String expectedScope : scopes) {
-                if (scopesToAuthorize.contains(expectedScope)) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        return strategy.isAuthorizingScopes(scopes, scopesToAuthorize);
     }
 }

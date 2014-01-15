@@ -16,22 +16,19 @@
  */
 package fr.norad.jaxrs.oauth2;
 
+import static fr.norad.jaxrs.oauth2.ScopeStrategy.ALL;
+import static fr.norad.jaxrs.oauth2.ScopeStrategy.ANY;
 import static fr.norad.jaxrs.oauth2.SecuredUtils.findSecuredInfo;
-import static fr.norad.jaxrs.oauth2.SecuredUtils.isAuthorized;
+import static fr.norad.jaxrs.oauth2.SecuringSomething.TheScopes.SCOPE_A;
+import static fr.norad.jaxrs.oauth2.SecuringSomething.TheScopes.SCOPE_B;
 import static org.fest.assertions.api.Assertions.assertThat;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import org.junit.Test;
 
 public class SecuredUtilsTest {
-    public static Set<String> set(String... scopes) {
-        return new HashSet<>(Arrays.asList(scopes));
-    }
 
     @Test
-    public void should_find_secured_return_null_on_non_annotated() throws Exception {
+    public void should_return_null_on_non_annotated() throws Exception {
         class Test {
             public void genre() {
             }
@@ -42,270 +39,141 @@ public class SecuredUtilsTest {
     }
 
     @Test
-    public void should_not_authorize_non_secured_method() throws Exception {
+    public void should_find_empty_scopes_when_method_annotated_with_not_secured() throws Exception {
         class Test {
+            @NotSecured
             public void genre() {
             }
         }
         Method method = Test.class.getMethod("genre");
 
-        assertThat(isAuthorized(method, set("scope1"))).isFalse();
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        assertThat(securedInfo.getScopes()).isEmpty();
+        assertThat(securedInfo.getStrategy()).isEqualTo(ALL);
     }
 
     @Test
-    public void should_not_authorize_for_empty_current_scope() throws Exception {
+    public void should_find_empty_scopes_when_class_annotated_with_not_secured() throws Exception {
+        @NotSecured
         class Test {
-            @SecuredWithScope("scope1")
             public void genre() {
             }
         }
         Method method = Test.class.getMethod("genre");
 
-        assertThat(isAuthorized(method, set())).isFalse();
-    }
-
-    @Test
-    public void should_not_authorize_for_empty_current_scope_or() throws Exception {
-        class Test {
-            @SecuredWithScope("scope1")
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, set())).isFalse();
-    }
-
-    @Test
-    public void should_not_fail_on_null_current_scope() throws Exception {
-        class Test {
-            @SecuredWithScope("scope1")
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, null)).isFalse();
-    }
-
-    @Test
-    public void should_authorize_single_scope() throws Exception {
-        class Test {
-            @SecuredWithScope("scope1")
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, set("scope1"))).isTrue();
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        assertThat(securedInfo.getScopes()).isEmpty();
+        assertThat(securedInfo.getStrategy()).isEqualTo(ALL);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void should_not_authorize_empty_scope() throws Exception {
+    public void should_fail_when_method_annotated_with_empty_scope() throws Exception {
         class Test {
-            @SecuredWithScope("")
+            @SecuringSomething({})
             public void genre() {
             }
         }
         Method method = Test.class.getMethod("genre");
 
-        isAuthorized(method, set("scope1"));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void should_not_authorize_empty_scope_or() throws Exception {
-        class Test {
-            @SecuredWithScope(value = "")
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        isAuthorized(method, set("scope1"));
+        findSecuredInfo(method);
     }
 
     @Test
-    public void should_authorize_single_scope_and() throws Exception {
+    public void should_find_scopes_when_method_annotated() throws Exception {
         class Test {
-            @SecuredWithScope(value = "scope1")
+            @SecuringSomething({ SCOPE_A, SCOPE_B })
             public void genre() {
             }
         }
         Method method = Test.class.getMethod("genre");
 
-        assertThat(isAuthorized(method, set("scope1"))).isTrue();
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        assertThat(securedInfo.getScopes()).containsOnly(SCOPE_A, SCOPE_B);
+        assertThat(securedInfo.getStrategy()).isEqualTo(ALL);
     }
 
     @Test
-    public void should_authorize_single_scope_or() throws Exception {
+    public void should_find_given_strategy() throws Exception {
         class Test {
-            @SecuredWithScope(value = "scope1")
+            @SecuringSomething(value = { SCOPE_A, SCOPE_B }, strategy = ANY)
             public void genre() {
             }
         }
         Method method = Test.class.getMethod("genre");
 
-        assertThat(isAuthorized(method, set("scope1"))).isTrue();
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        assertThat(securedInfo.getScopes()).containsOnly(SCOPE_A, SCOPE_B);
+        assertThat(securedInfo.getStrategy()).isEqualTo(ANY);
     }
 
     @Test
-    public void should_not_authorize_single_scope() throws Exception {
-        class Test {
-            @SecuredWithScope("scope1")
+    public void should_find_scopes_on_interface() throws Exception {
+        class Test implements SecuredInterface {
             public void genre() {
             }
         }
         Method method = Test.class.getMethod("genre");
 
-        assertThat(isAuthorized(method, set("scope2"))).isFalse();
-    }
-
-    @Test
-    public void should_not_authorize_2_and_scope_missing() throws Exception {
-        class Test {
-            @SecuredWithAllScopesOf({"scope1", "scope2"})
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, set("scope1"))).isFalse();
-    }
-
-    @Test
-    public void should_not_authorize_2_and_scope_missing2() throws Exception {
-        class Test {
-            @SecuredWithAllScopesOf({"scope1", "scope2"})
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, set("scope2"))).isFalse();
-    }
-
-    @Test
-    public void should_authorize_2_or_scope() throws Exception {
-        class Test {
-            @SecuredWithAnyScopesOf({"scope1", "scope2"})
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, set("scope1"))).isTrue();
-    }
-
-    @Test
-    public void should_authorize_2_or_scope2() throws Exception {
-        class Test {
-            @SecuredWithAnyScopesOf({"scope1", "scope2"})
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, set("scope2"))).isTrue();
-    }
-
-    @Test
-    public void should_not_authorize_or_scope2() throws Exception {
-        class Test {
-            @SecuredWithAnyScopesOf({"scope1", "scope2"})
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, set("scope2"))).isTrue();
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void should_fail_when_scope_string_is_empty() throws Exception {
-        class Test {
-            @SecuredWithAnyScopesOf({"non-empty", ""})
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        isAuthorized(method, set("scope2"));
-    }
-
-    @Test
-    public void should_find_secured_on_class() throws Exception {
-        @SecuredWithAnyScopesOf({"scope1", "scope2"})
-        class Test {
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, set("scope2"))).isTrue();
-    }
-
-    @Test
-    public void should_find_secured_on_interface() throws Exception {
-        class Test implements NotSecuredInterface {
-            public void genre() {
-            }
-        }
-        Method method = Test.class.getMethod("genre");
-
-        assertThat(isAuthorized(method, set("scope2"))).isTrue();
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        assertThat(securedInfo.getScopes()).containsOnly(SCOPE_A, SCOPE_B);
+        assertThat(securedInfo.getStrategy()).isEqualTo(ANY);
     }
 
     @Test
     public void should_find_secured_on_extends() throws Exception {
-        @SecuredWithAnyScopesOf({"scope1", "scope2"})
-        class NotSecuredExtends {
+        @SecuringSomething(value = { SCOPE_A, SCOPE_B }, strategy = ANY)
+        class SecuredExtends {
         }
-        class Test extends NotSecuredExtends {
+        class Test extends SecuredExtends {
             public void genre() {
             }
         }
         Method method = Test.class.getMethod("genre");
 
-        assertThat(isAuthorized(method, set("scope2"))).isTrue();
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        assertThat(securedInfo.getScopes()).containsOnly(SCOPE_A, SCOPE_B);
+        assertThat(securedInfo.getStrategy()).isEqualTo(ANY);
     }
 
     @Test
-    public void should_find_secured_on_override() throws Exception {
-        class NotSecuredExtends {
-            @SecuredWithAnyScopesOf({"scope1", "scope2"})
+    public void should_find_secured_on_overridden_method() throws Exception {
+        class SecuredExtends {
+            @SecuringSomething(value = { SCOPE_A, SCOPE_B }, strategy = ANY)
             public void genre() {
             }
         }
-        class Test extends NotSecuredExtends {
+        class Test extends SecuredExtends {
             @Override
             public void genre() {
             }
         }
         Method method = Test.class.getMethod("genre");
 
-        assertThat(isAuthorized(method, set("scope2"))).isTrue();
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        assertThat(securedInfo.getScopes()).containsOnly(SCOPE_A, SCOPE_B);
+        assertThat(securedInfo.getStrategy()).isEqualTo(ANY);
     }
 
     @Test
     public void should_find_secured_on_method_interface() throws Exception {
-        class Test implements NotSecuredMethodInterface {
+        class Test implements SecuredMethodInterface {
             @Override
             public void genre() {
             }
         }
         Method method = Test.class.getMethod("genre");
 
-        assertThat(isAuthorized(method, set("scope2"))).isTrue();
+        SecuredInfo securedInfo = findSecuredInfo(method);
+        assertThat(securedInfo.getScopes()).containsOnly(SCOPE_A, SCOPE_B);
+        assertThat(securedInfo.getStrategy()).isEqualTo(ANY);
     }
 
-    @SecuredWithAnyScopesOf({"scope1", "scope2"})
-    interface NotSecuredInterface {
+    @SecuringSomething(value = { SCOPE_A, SCOPE_B }, strategy = ANY)
+    interface SecuredInterface {
     }
 
-    interface NotSecuredMethodInterface {
-        @SecuredWithAnyScopesOf({"scope1", "scope2"})
+    interface SecuredMethodInterface {
+        @SecuringSomething(value = { SCOPE_A, SCOPE_B }, strategy = ANY)
         public void genre();
     }
-
-
 }
