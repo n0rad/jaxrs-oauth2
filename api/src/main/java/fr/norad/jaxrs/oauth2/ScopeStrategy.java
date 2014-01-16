@@ -25,8 +25,8 @@ public enum ScopeStrategy {
      */
     ANY {
         @Override
-        public boolean isAuthorizingScopes(Set<Scope> resourceDefinedScopes, Set<Scope> scopesToAuthorize) {
-            for (Scope definedScope : resourceDefinedScopes) {
+        boolean isAuthorizingScopes(Set<String> resourceDefinedScopes, Set<String> scopesToAuthorize) {
+            for (String definedScope : resourceDefinedScopes) {
                 if (scopesToAuthorize.contains(definedScope)) {
                     return true;
                 }
@@ -41,8 +41,8 @@ public enum ScopeStrategy {
      */
     ALL {
         @Override
-        public boolean isAuthorizingScopes(Set<Scope> resourceDefinedScopes, Set<Scope> scopesToAuthorize) {
-            for (Scope definedScope : resourceDefinedScopes) {
+        boolean isAuthorizingScopes(Set<String> resourceDefinedScopes, Set<String> scopesToAuthorize) {
+            for (String definedScope : resourceDefinedScopes) {
                 if (!scopesToAuthorize.contains(definedScope)) {
                     return false;
                 }
@@ -52,5 +52,5 @@ public enum ScopeStrategy {
         }
     };
 
-    public abstract boolean isAuthorizingScopes(Set<Scope> scopes, Set<Scope> scopesToAuthorize);
+    abstract boolean isAuthorizingScopes(Set<String> scopes, Set<String> scopesToAuthorize);
 }
