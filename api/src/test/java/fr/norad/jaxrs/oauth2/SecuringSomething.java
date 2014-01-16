@@ -16,17 +16,30 @@
  */
 package fr.norad.jaxrs.oauth2;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
+import static fr.norad.jaxrs.oauth2.ScopeStrategy.ALL;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.METHOD, ElementType.TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Documented
-public @interface SecuredWithAllScopesOf {
-    String[] value();
+@Secured
+@Target({ METHOD, TYPE })
+@Retention(RUNTIME)
+public @interface SecuringSomething {
+
+    TheScopes[] value();
+
+    ScopeStrategy strategy() default ALL;
+
+    public enum TheScopes implements Scope {
+        SCOPE_A,
+        SCOPE_B,
+        SCOPE_C;
+
+        @Override
+        public String scopeIdentifier() {
+            return this.name();
+        }
+    }
 }
