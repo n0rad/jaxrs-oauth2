@@ -17,6 +17,7 @@
 package fr.norad.jaxrs.oauth2;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
@@ -32,7 +33,23 @@ public class SecuredInfo {
         this.strategy = strategy;
     }
 
+    private Set<String> asSetOfString(Collection<Scope> scopes) {
+        Set<String> scopeStrings = new HashSet<>(scopes.size());
+        for (Scope scope : scopes) {
+            scopeStrings.add(scope.scopeIdentifier());
+        }
+        return scopeStrings;
+    }
+
     public boolean isAuthorizingScopes(Set<Scope> scopesToAuthorize) {
+        if (scopesToAuthorize == null) {
+            return false;
+        }
+
+        return isAuthorizingScopeStrings(asSetOfString(scopesToAuthorize));
+    }
+
+    public boolean isAuthorizingScopeStrings(Set<String> scopesToAuthorize) {
         if (scopes.isEmpty()) {
             return true;
         }
@@ -41,6 +58,7 @@ public class SecuredInfo {
             return false;
         }
 
-        return strategy.isAuthorizingScopes(scopes, scopesToAuthorize);
+        return strategy.isAuthorizingScopes(asSetOfString(scopes), scopesToAuthorize);
     }
+
 }

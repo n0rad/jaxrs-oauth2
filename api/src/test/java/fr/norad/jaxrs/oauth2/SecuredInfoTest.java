@@ -43,64 +43,58 @@ public class SecuredInfoTest {
     }
 
     @Test
-    public void should_authorize_all_for_empty_required_scope() throws Exception {
+    public void should_authorize_all_for_empty_required_scope() {
         assertThat(new SecuredInfo(EMPTY_ARRAY, ALL).isAuthorizingScopes(IGNORED)).isTrue();
     }
 
     @Test
-    public void should_NOT_authorize_on_null_current_scope() throws Exception {
+    public void should_NOT_authorize_on_null_current_scope() {
         assertThat(new SecuredInfo(asArray(SCOPE_A), ALL).isAuthorizingScopes(null)).isFalse();
     }
 
     @Test
-    public void should_authorize_using_ALL_strategy_when_scope_matches_the_annotated_scope() throws Exception {
+    public void should_authorize_using_ALL_strategy_when_scope_matches_the_annotated_scope() {
         assertThat(new SecuredInfo(asArray(SCOPE_A), ALL).isAuthorizingScopes(setOf(SCOPE_A))).isTrue();
     }
 
     @Test
-    public void should_authorize_using_ANY_strategy_when_scope_matches_the_annotated_scope() throws Exception {
+    public void should_authorize_using_ANY_strategy_when_scope_matches_the_annotated_scope() {
         assertThat(new SecuredInfo(asArray(SCOPE_A), ANY).isAuthorizingScopes(setOf(SCOPE_A))).isTrue();
     }
 
     @Test
-    public void should_NOT_authorize_when_scope_DOESNT_match_the_annotated_scope() throws Exception {
+    public void should_NOT_authorize_when_scope_DOESNT_match_the_annotated_scope() {
         assertThat(new SecuredInfo(asArray(SCOPE_A), ALL).isAuthorizingScopes(setOf(SCOPE_B))).isFalse();
     }
 
     @Test
-    public void should_authorize_using_ALL_strategy_when_two_scopes_required_and_both_given() throws
-            Exception {
+    public void should_authorize_using_ALL_strategy_when_two_scopes_required_and_both_given() {
         assertThat(new SecuredInfo(asArray(SCOPE_A, SCOPE_B), ALL).isAuthorizingScopes(setOf(SCOPE_A, SCOPE_B)))
                 .isTrue();
     }
 
     @Test
-    public void should_NOT_authorize_using_ALL_strategy_when_two_scopes_required_but_only_first_one_given() throws
-            Exception {
+    public void should_NOT_authorize_using_ALL_strategy_when_two_scopes_required_but_only_first_one_given() {
         assertThat(new SecuredInfo(asArray(SCOPE_A, SCOPE_B), ALL).isAuthorizingScopes(setOf(SCOPE_A))).isFalse();
     }
 
     @Test
-    public void should_NOT_authorize_using_ALL_strategy_when_two_scopes_required_but_only_last_one_given() throws
-            Exception {
+    public void should_NOT_authorize_using_ALL_strategy_when_two_scopes_required_but_only_last_one_given() {
         assertThat(new SecuredInfo(asArray(SCOPE_A, SCOPE_B), ALL).isAuthorizingScopes(setOf(SCOPE_B))).isFalse();
     }
 
     @Test
-    public void should_authorize_using_ANY_strategy_when_two_scopes_defined_and_only_first_one_given() throws
-            Exception {
+    public void should_authorize_using_ANY_strategy_when_two_scopes_defined_and_only_first_one_given() {
         assertThat(new SecuredInfo(asArray(SCOPE_A, SCOPE_B), ANY).isAuthorizingScopes(setOf(SCOPE_A))).isTrue();
     }
 
     @Test
-    public void should_authorize_using_ANY_strategy_when_two_scopes_defined_and_only_last_one_given() throws
-            Exception {
+    public void should_authorize_using_ANY_strategy_when_two_scopes_defined_and_only_last_one_given() {
         assertThat(new SecuredInfo(asArray(SCOPE_A, SCOPE_B), ANY).isAuthorizingScopes(setOf(SCOPE_B))).isTrue();
     }
 
     @Test
-    public void should_NOT_authorize_using_ANY_strategy_when_two_scopes_defined_but_none_given() throws
-            Exception {
+    public void should_NOT_authorize_using_ANY_strategy_when_two_scopes_defined_but_none_given() {
         assertThat(new SecuredInfo(asArray(SCOPE_A, SCOPE_B), ANY).isAuthorizingScopes(setOf(SCOPE_C))).isFalse();
     }
 }
