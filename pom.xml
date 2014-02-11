@@ -5,7 +5,7 @@
 	<artifactId>jaxrs-oauth2</artifactId>
 	<packaging>pom</packaging>
 	<description>Full jax-rs security using oauth2</description>
-    <version>0.6</version>
+    <version>0.7-SNAPSHOT</version>
 
     <parent>
         <groupId>fr.norad.parent</groupId>
@@ -17,7 +17,7 @@
         <connection>scm:git:git://github.com/n0rad/jaxrs-oauth2.git</connection>
         <developerConnection>scm:git:git@github.com:n0rad/jaxrs-oauth2.git</developerConnection>
         <url>https://github.com/n0rad/jaxrs-oauth2</url>
-        <tag>jaxrs-oauth2-0.6</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
