@@ -1,10 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.norad.jaxrs.oauth2</groupId>
-	<artifactId>jaxrs-oauth2</artifactId>
-	<packaging>pom</packaging>
-	<description>Full jax-rs security using oauth2</description>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>fr.norad.jaxrs.oauth2</groupId>
+    <artifactId>oauth2</artifactId>
+    <packaging>pom</packaging>
+    <description>Full jax-rs security using oauth2</description>
+    <properties>
+        <jaxrs-client-server.version>0.8-SNAPSHOT</jaxrs-client-server.version>
+    </properties>
     <version>0.8-SNAPSHOT</version>
 
     <parent>
@@ -22,63 +26,145 @@
 
     <modules>
         <module>api</module>
+        <module>core</module>
+        <module>client</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
-<!--            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>3.2.1.RELEASE</version>
-            </dependency>-->
+            <dependency>
+                <groupId>fr.norad.jaxrs.oauth2</groupId>
+                <artifactId>oauth2-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.norad.jaxrs.oauth2</groupId>
+                <artifactId>oauth2-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.norad.jaxrs.oauth2</groupId>
+                <artifactId>oauth2-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+
+            <!-- CORE -->
             <dependency>
                 <groupId>fr.norad.core</groupId>
                 <artifactId>core</artifactId>
-                <version>0.9</version>
-            </dependency>
-
-            <!--        <dependency> -->
-            <!--            <groupId>org.springframework.security</groupId> -->
-            <!--            <artifactId>spring-security-core</artifactId> -->
-            <!--            <version>3.1.3.RELEASE</version> -->
-            <!--            <optional>true</optional> -->
-            <!--        </dependency> -->
-
-            <!-- <dependency> -->
-            <!-- <groupId>org.springframework.security</groupId> -->
-            <!-- <artifactId>spring-security-web</artifactId> -->
-            <!-- <version>3.1.3.RELEASE</version> -->
-            <!-- </dependency> -->
-            <!-- <dependency> -->
-            <!-- <groupId>javax.servlet</groupId> -->
-            <!-- <artifactId>javax.servlet-api</artifactId> -->
-            <!-- <version>3.0.1</version> -->
-            <!-- </dependency> -->
-
-       <!--     <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-                <version>2.7.5</version>
-            </dependency>-->
-            <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>javax.ws.rs-api</artifactId>
-                <version>2.0-m10</version>
+                <version>0.10-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.2</version>
             </dependency>
-        </dependencies>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>14.0</version>
+            </dependency>
 
+            <!-- REST -->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>2.0-m10</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.norad.jaxrs.client.server</groupId>
+                <artifactId>jaxrs-client-server-api</artifactId>
+                <version>${jaxrs-client-server.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.norad.jaxrs.client.server</groupId>
+                <artifactId>jaxrs-client-server-core</artifactId>
+                <version>${jaxrs-client-server.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+                <version>2.7.8</version>
+            </dependency>
+
+            <!-- SPRING -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>3.2.4.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>3.2.4.RELEASE</version>
+            </dependency>
+
+            <!-- CLIENT -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>2.3.1</version>
+            </dependency>
+
+
+            <!-- VALIDATION -->
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>1.1.0.Final</version>
+            </dependency>
+
+            <!-- TEST -->
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-local</artifactId>
+                <version>2.7.8</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>5.1.0.Beta1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.el</groupId>
+                <artifactId>javax.el-api</artifactId>
+                <version>2.2.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.0.13</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>fr.norad.logback.prettier</groupId>
+                <artifactId>logback-prettier</artifactId>
+                <scope>test</scope>
+                <version>0.5</version>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
 
-	<dependencies>
+    <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>0.11.8</version>
+            <version>1.12.6</version>
             <scope>provided</scope>
         </dependency>
 
@@ -90,10 +176,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-assert-core</artifactId>
-            <version>2.0M8</version>
-            <scope>test</scope>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -101,6 +186,11 @@
             <version>1.9.0-rc1</version>
             <scope>test</scope>
         </dependency>
-
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>3.2.4.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project> 

@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>oauth2-api</artifactId>
+    <artifactId>oauth2-client</artifactId>
     <packaging>jar</packaging>
 
     <parent>
@@ -13,20 +13,21 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>fr.norad.jaxrs.oauth2</groupId>
+            <artifactId>oauth2-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>fr.norad.core</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>fr.norad.jaxrs.client.server</groupId>
-            <artifactId>jaxrs-client-server-api</artifactId>
+            <artifactId>jaxrs-client-server-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
     </dependencies>
 </project> 
